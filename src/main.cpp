@@ -1,3 +1,6 @@
+// Copyright(c) 2023 Takao Akaki
+
+
 #include <M5Unified.h>
 #include <Avatar.h>
 #include "fft.hpp"
