@@ -95,7 +95,7 @@ void lipsync() {
     level += abs(f);
   }
 
-  Serial.printf("level:%d\n", level) ;         // lipsync_maxを調整するときはこの行をコメントアウトしてください。
+  //Serial.printf("level:%d\n", level) ;         // lipsync_maxを調整するときはこの行をコメントアウトしてください。
   float ratio = (float)((level >> 9)/lipsync_max);
   // Serial.printf("ratio:%f\n", ratio);
   if (ratio <= 0.01f) {
@@ -119,6 +119,7 @@ void lipsync() {
 void setup()
 {
   auto cfg = M5.config();
+  cfg.internal_mic = false;
   M5.begin(cfg);
   float scale = 0.0f;
   int8_t position_x = 0;
@@ -136,6 +137,7 @@ void setup()
       break;
 
     case m5::board_t::board_M5StickC:
+      M5.Power.Axp192.setLDO0(2800); // 一部これを実行しないとマイクが動かない機種がある。
       first_cps = 1;
       scale = 0.6f;
       position_x = -30;
@@ -145,6 +147,7 @@ void setup()
       break;
 
     case m5::board_t::board_M5StickCPlus:
+      M5.Power.Axp192.setLDO0(2800); // 一部これを実行しないとマイクが動かない機種がある。
       first_cps = 2;
       scale = 0.7f;
       position_x = -15;
