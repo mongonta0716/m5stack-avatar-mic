@@ -10,13 +10,13 @@ M5StickC/M5StickCPlus/ATOMS3+PDMUnit
 
 ・VSCode + PlatformIO
 
-ArduinoIDEの場合は下記のように変更してください。
-srcフォルダ -> m5stack-avatar-mic
-main.cpp -> m5stack-avatar-mic.ino
+ArduinoIDEの場合は下記のように名前を変更してください。
+- srcフォルダ -> m5stack-avatar-mic
+- main.cpp -> m5stack-avatar-mic.ino
 
 # 必要なライブラリ
 
-・ M5Stack-Avatar<br>2023/1/1時点ではGitHub上の最新のみ
-・ M5Unified v0.1.1
+- M5Stack-Avatar<br>2023/1/1時点ではGitHub上の最新のみ
+- M5Unified v0.1.1
 
 
