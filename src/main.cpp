@@ -104,21 +104,8 @@ void lipsync() {
     ratio = 1.3f;
   }
   if ((millis() - last_rotation_msec) > 350) {
-    int direction = random(4);
-    switch (direction) {
-      case 0:
-        avatar.setRotation(20 * ratio);
-        break;
-      case 1:
-        avatar.setRotation(-20 * ratio);
-        break;
-      case 2:
-        avatar.setRotation(10 * ratio);
-        break;
-      case 3:
-        avatar.setRotation(-10 * ratio);
-        break;
-    }
+    int direction = random(-2, 2);
+    avatar.setRotation(direction * 10 * ratio);
     last_rotation_msec = millis();
   }
   avatar.setMouthOpenRatio(ratio);
@@ -133,7 +120,7 @@ void setup()
   float scale = 0.0f;
   int8_t position_x = 0;
   int8_t position_y = 0;
-  uint8_t display_rotation = 1; // ディスプレイの向き(0〜3)
+  uint8_t display_rotation = 3; // ディスプレイの向き(0〜3)
   uint8_t first_cps = 0;
   switch (M5.getBoard()) {
     case m5::board_t::board_M5AtomS3:
@@ -146,7 +133,7 @@ void setup()
       break;
 
     case m5::board_t::board_M5StickC:
-#ifdef ARDUINO_M5StickC    
+#ifdef ARDUINO_M5Stick_C    
       M5.Power.Axp192.setLDO0(2800); // 一部これを実行しないとマイクが動かない機種がある。
 #endif
       first_cps = 1;
@@ -158,7 +145,7 @@ void setup()
       break;
 
     case m5::board_t::board_M5StickCPlus:
-#ifdef ARDUINO_M5StickC    
+#ifdef ARDUINO_M5Stick_C    
       M5.Power.Axp192.setLDO0(2800); // 一部これを実行しないとマイクが動かない機種がある。
 #endif
       first_cps = 2;
