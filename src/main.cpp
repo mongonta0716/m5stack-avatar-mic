@@ -156,13 +156,16 @@ void setup()
       pin_data = 34;
       break;
     
-    case m5::board_t::board_M5Stack:
+    case m5::board_t::board_M5StackCore2:
       scale = 1.0f;
       position_x = 0;
       position_y = 0;
       display_rotation = 1;
+      pin_clk  = 0;
+      pin_data = 34;
       break;
 
+      
     defalut:
       Serial.println("Invalid board.");
       break;
