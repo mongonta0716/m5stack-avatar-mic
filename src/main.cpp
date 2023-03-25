@@ -23,7 +23,7 @@
   static constexpr size_t WAVE_SIZE = 320;
   static int16_t raw_data[WAVE_SIZE * 2];
 
-  float lipsync_max = 300.0f;  // リップシンクの単位ここを増減すると口の開き方が変わります。
+  float lipsync_max = 250.0f;  // リップシンクの単位ここを増減すると口の開き方が変わります。
 
 #endif
 
@@ -95,7 +95,7 @@ void lipsync() {
     level += abs(f);
   }
 
-  //Serial.printf("level:%d\n", level) ;         // lipsync_maxを調整するときはこの行をコメントアウトしてください。
+  //Serial.printf("level:%d\n", level >> 10) ;         // lipsync_maxを調整するときはこの行をコメントアウトしてください。
   float ratio = (float)((level >> 9)/lipsync_max);
   // Serial.printf("ratio:%f\n", ratio);
   if (ratio <= 0.01f) {
@@ -116,7 +116,10 @@ void setup()
 {
   auto cfg = M5.config();
   cfg.internal_mic = false;
+  cfg.serial_baudrate = 115200;
   M5.begin(cfg);
+  M5.Log.printf("M5.Log avatar Start\n");
+  Serial.println("avatar start");
   float scale = 0.0f;
   int8_t position_x = 0;
   int8_t position_y = 0;
@@ -128,6 +131,7 @@ void setup()
       scale = 0.5f;
       position_x = 5;
       position_y = -15;
+      display_rotation = 0;
       pin_clk  = 1;
       pin_data = 2;
       break;
@@ -145,7 +149,7 @@ void setup()
       break;
 
     case m5::board_t::board_M5StickCPlus:
-#ifdef ARDUINO_M5Stick_C    
+#if defined(ARDUINO_M5Stick_C) || defined(ARDUINO_M5Stick_C_PLUS)     
       M5.Power.Axp192.setLDO0(2800); // 一部これを実行しないとマイクが動かない機種がある。
 #endif
       first_cps = 2;
