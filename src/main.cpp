@@ -18,7 +18,7 @@
 
   int16_t *adcBuffer = NULL;
   static fft_t fft;
-  static constexpr size_t WAVE_SIZE = 256;
+  static constexpr size_t WAVE_SIZE = 256 * 2;
 
   static constexpr const size_t record_samplerate = 16000;
   static int16_t *rec_data;
@@ -45,7 +45,7 @@ void lipsync() {
   
   size_t bytesread;
   uint64_t level = 0;
-  if ( M5.Mic.record(rec_data, 512, record_samplerate)) {
+  if ( M5.Mic.record(rec_data, WAVE_SIZE, record_samplerate)) {
     fft.exec(rec_data);
     for (size_t bx=5;bx<=60;++bx) {
       int32_t f = fft.get(bx);
@@ -106,22 +106,13 @@ void setup()
       break;
 
     case m5::board_t::board_M5StickC:
-#ifdef ARDUINO_M5Stick_C    
-      M5.Power.Axp192.setLDO0(2800); // 一部これを実行しないとマイクが動かない機種がある。
-#endif
       first_cps = 1;
       scale = 0.6f;
       position_x = -30;
       position_y = -15;
-      mic_cfg.pin_ws = 0;
-      mic_cfg.pin_data_in = 34;
-      M5.Mic.config(mic_cfg);
       break;
 
     case m5::board_t::board_M5StickCPlus:
-#if defined(ARDUINO_M5Stick_C) || defined(ARDUINO_M5Stick_C_PLUS)     
-      M5.Power.Axp192.setLDO0(2800); // 一部これを実行しないとマイクが動かない機種がある。
-#endif
       first_cps = 2;
       scale = 0.7f;
       position_x = -15;
@@ -149,8 +140,8 @@ void setup()
       Serial.println("Invalid board.");
       break;
   }
-  rec_data = (typeof(rec_data))heap_caps_malloc(WAVE_SIZE * 2 * sizeof(int16_t), MALLOC_CAP_8BIT);
-  memset(rec_data, 0 , WAVE_SIZE * 2 * sizeof(int16_t));
+  rec_data = (typeof(rec_data))heap_caps_malloc(WAVE_SIZE * sizeof(int16_t), MALLOC_CAP_8BIT);
+  memset(rec_data, 0 , WAVE_SIZE * sizeof(int16_t));
   M5.Speaker.end();
   M5.Mic.begin();
 
