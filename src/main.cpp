@@ -131,8 +131,13 @@ void setup()
       position_x = 0;
       position_y = 0;
       display_rotation = 1;
-      mic_cfg.stereo = true;
-      M5.Mic.config(mic_cfg);
+      break;
+
+    case m5::board_t::board_M5Stack:
+      scale = 1.0f;
+      position_x = 0;
+      position_y = 0;
+      display_rotation = 1;
       break;
 
       
