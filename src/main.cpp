@@ -195,8 +195,8 @@ void setup()
   cps[4]->set(COLOR_PRIMARY, TFT_BLACK);
   cps[4]->set(COLOR_BACKGROUND, TFT_WHITE);
   cps[5] = new ColorPalette();
-  cps[5]->set(COLOR_PRIMARY, 0x303303);
-  cps[5]->set(COLOR_BACKGROUND, 0x00ff00);
+  cps[5]->set(COLOR_PRIMARY, (uint16_t)0x303303);
+  cps[5]->set(COLOR_BACKGROUND, (uint16_t)0x00ff00);
   avatar.setColorPalette(*cps[first_cps]);
   //avatar.addTask(lipsync, "lipsync");
   last_rotation_msec = millis();
