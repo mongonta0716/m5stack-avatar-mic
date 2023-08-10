@@ -87,17 +87,17 @@ void setup()
   M5.Log.printf("M5.Log avatar Start\n");
   Serial.println("avatar start");
   float scale = 0.0f;
-  int8_t position_x = 0;
-  int8_t position_y = 0;
+  int8_t position_top = 0;
+  int8_t position_left = 0;
   uint8_t display_rotation = 3; // ディスプレイの向き(0〜3)
   uint8_t first_cps = 0;
   auto mic_cfg = M5.Mic.config();
   switch (M5.getBoard()) {
     case m5::board_t::board_M5AtomS3:
       first_cps = 4;
-      scale = 0.5f;
-      position_x = 5;
-      position_y = -15;
+      scale = 0.55f;
+      position_top =  -60;
+      position_left = -95;
       display_rotation = 1;
       // M5AtomS3は外部マイク(PDMUnit)なので設定を行う。
       mic_cfg.pin_ws = 1;
@@ -108,35 +108,35 @@ void setup()
     case m5::board_t::board_M5StickC:
       first_cps = 1;
       scale = 0.6f;
-      position_x = -30;
-      position_y = -15;
+      position_top = -80;
+      position_left = -80;
       break;
 
     case m5::board_t::board_M5StickCPlus:
       first_cps = 2;
-      scale = 0.7f;
-      position_x = -15;
-      position_y = 5;
+      scale = 0.85f;
+      position_top = -60;
+      position_left = -35;
       break;
     
     case m5::board_t::board_M5StackCore2:
       scale = 1.0f;
-      position_x = 0;
-      position_y = 0;
+      position_top = 0;
+      position_left = 0;
       display_rotation = 1;
       break;
 
     case m5::board_t::board_M5StackCoreS3:
       scale = 1.0f;
-      position_x = 0;
-      position_y = 0;
+      position_top = 0;
+      position_left = 0;
       display_rotation = 1;
       break;
 
     case m5::board_t::board_M5Stack:
       scale = 1.0f;
-      position_x = 0;
-      position_y = 0;
+      position_top = 0;
+      position_left = 0;
       display_rotation = 1;
       break;
 
@@ -150,10 +150,10 @@ void setup()
   M5.Speaker.end();
   M5.Mic.begin();
 
-  M5.Lcd.setRotation(display_rotation);
+  M5.Display.setRotation(display_rotation);
   avatar.setScale(scale);
-  avatar.setPosition(position_x, position_y);
-  avatar.init(); // start drawing
+  avatar.setPosition(position_top, position_left);
+  avatar.init(1); // start drawing
   cps[0] = new ColorPalette();
   cps[0]->set(COLOR_PRIMARY, TFT_BLACK);
   cps[0]->set(COLOR_BACKGROUND, TFT_YELLOW);
@@ -194,6 +194,9 @@ void loop()
       palette_index = 0;
     }
     avatar.setColorPalette(*cps[palette_index]);
+  }
+  if (M5.BtnA.wasDoubleClicked()) {
+    M5.Display.setRotation(3);
   }
   
 //  if ((millis() - last_rotation_msec) > 100) {
