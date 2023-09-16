@@ -15,6 +15,7 @@
   // ---------- Mic sampling ----------
 
   #define READ_LEN    (2 * 256)
+  #define LIPSYNC_LEVEL_MAX 10.0f
 
   int16_t *adcBuffer = NULL;
   static fft_t fft;
@@ -25,7 +26,7 @@
   
   // setupの最初の方の機種判別で書き換えている場合があります。そちらもチェックしてください。（マイクの性能が異なるため）
   uint8_t lipsync_shift_level = 11; // リップシンクのデータをどのくらい小さくするか設定。口の開き方が変わります。
-  float lipsync_max = 200.0f;  // リップシンクの単位ここを増減すると口の開き方が変わります。
+  float lipsync_max =LIPSYNC_LEVEL_MAX;  // リップシンクの単位ここを増減すると口の開き方が変わります。
 
 #endif
 
@@ -39,7 +40,7 @@ ColorPalette *cps[6];
 uint8_t palette_index = 0;
 
 uint32_t last_rotation_msec = 0;
-
+uint32_t last_lipsync_max_msec = 0;
 
 void lipsync() {
   
@@ -59,9 +60,22 @@ void lipsync() {
   M5_LOGI("ratio:%f\n", ratio);
   if (ratio <= 0.01f) {
     ratio = 0.0f;
-  } else if (ratio >= 1.3f) {
-    ratio = 1.3f;
+    if ((millis() - last_lipsync_max_msec) > 500) {
+      // 0.5秒以上無音の場合リップシンク上限をリセット
+      last_lipsync_max_msec = millis();
+      lipsync_max = LIPSYNC_LEVEL_MAX;
+    }
+  } else {
+    if (ratio > 1.3f) {
+      if (ratio > 1.5f) {
+        // リップシンク上限を大幅に超えた場合、上限を上げていく。
+        lipsync_max += 10.0f;
+      }
+      ratio = 1.3f;
+    }
+    last_lipsync_max_msec = millis(); // 無音でない場合は更新
   }
+
   if ((millis() - last_rotation_msec) > 350) {
     int direction = random(-2, 2);
     avatar.setRotation(direction * 10 * ratio);
@@ -89,7 +103,7 @@ void setup()
   float scale = 0.0f;
   int8_t position_top = 0;
   int8_t position_left = 0;
-  uint8_t display_rotation = 3; // ディスプレイの向き(0〜3)
+  uint8_t display_rotation = 1; // ディスプレイの向き(0〜3)
   uint8_t first_cps = 0;
   auto mic_cfg = M5.Mic.config();
   switch (M5.getBoard()) {
@@ -98,7 +112,7 @@ void setup()
       scale = 0.55f;
       position_top =  -60;
       position_left = -95;
-      display_rotation = 1;
+      display_rotation = 3;
       // M5AtomS3は外部マイク(PDMUnit)なので設定を行う。
       mic_cfg.pin_ws = 1;
       mic_cfg.pin_data_in = 2;
@@ -110,13 +124,15 @@ void setup()
       scale = 0.6f;
       position_top = -80;
       position_left = -80;
+      display_rotation = 3;
       break;
 
     case m5::board_t::board_M5StickCPlus:
-      first_cps = 2;
+      first_cps = 1;
       scale = 0.85f;
-      position_top = -60;
+      position_top = -55;
       position_left = -35;
+      display_rotation = 3;
       break;
     
     case m5::board_t::board_M5StackCore2:
