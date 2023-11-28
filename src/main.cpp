@@ -7,7 +7,7 @@
 #include <cinttypes>
 #if defined(ARDUINO_M5STACK_CORES3)
   #include <gob_unifiedButton.hpp>
-  gob::UnifiedButton unifiedButton;
+  goblib::UnifiedButton unifiedButton;
 #endif
 #define USE_MIC
 
@@ -92,7 +92,7 @@ void setup()
   cfg.serial_baudrate = 115200;
   M5.begin(cfg);
 #if defined( ARDUINO_M5STACK_CORES3 )
-  unifiedButton.begin(&M5.Display, gob::UnifiedButton::appearance_t::transparent_all);
+  unifiedButton.begin(&M5.Display, goblib::UnifiedButton::appearance_t::transparent_all);
 #endif
   M5.Log.setLogLevel(m5::log_target_display, ESP_LOG_NONE);
   M5.Log.setLogLevel(m5::log_target_serial, ESP_LOG_INFO);
