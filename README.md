@@ -4,12 +4,13 @@
 
 # 対応デバイス
 
-- M5Stack Core2
+- M5Stack Core2/Core2 V1.1/AWS
 - M5StickC
 - M5StickCPlus
 - ATOMS3 + PDMUnit
 - M5Stack CoreS3
 - M5Stack Fire
+- M5Dial + PDMUnit(Port.A)
 
 # 環境
 
@@ -28,8 +29,8 @@ ArduinoIDEの場合は下記のように名前を変更してください。
 - arduiono-esp32 v2.0.8(espressif 6.2.0)
 
 # ライブラリ
-- M5Stack-Avatar v0.9.0
-- M5Unified v0.1.9
+- M5Stack-Avatar v0.9.1
+- M5Unified v0.1.11
 
 # LICENSE
 [MIT](https://github.com/mongonta0716/m5stack-avatar-mic/blob/main/LICENSE)

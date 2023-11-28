@@ -156,6 +156,18 @@ void setup()
       display_rotation = 1;
       break;
 
+    case m5::board_t::board_M5Dial:
+      first_cps = 1;
+      scale = 0.8f;
+      position_top =  0;
+      position_left = -40;
+      display_rotation = 1;
+      // M5ADial(StampS3)は外部マイク(PDMUnit)なので設定を行う。(Port.A)
+      mic_cfg.pin_ws = 15;
+      mic_cfg.pin_data_in = 13;
+      M5.Mic.config(mic_cfg);
+      break;
+
       
     defalut:
       Serial.println("Invalid board.");
