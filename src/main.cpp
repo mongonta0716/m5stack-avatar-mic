@@ -21,7 +21,7 @@
   static fft_t fft;
   static constexpr size_t WAVE_SIZE = 256 * 2;
 
-  static constexpr const size_t record_samplerate = 16000;
+  static constexpr const size_t record_samplerate = 48000; // M5StickCPlus2だと48KHzじゃないと動かない。
   static int16_t *rec_data;
   
   // setupの最初の方の機種判別で書き換えている場合があります。そちらもチェックしてください。（マイクの性能が異なるため）
@@ -54,10 +54,10 @@ void lipsync() {
     }
   }
   uint32_t temp_level = level >> lipsync_shift_level;
-  M5_LOGI("level:%" PRId64 "\n", level) ;         // lipsync_maxを調整するときはこの行をコメントアウトしてください。
-  M5_LOGI("temp_level:%d\n", temp_level) ;         // lipsync_maxを調整するときはこの行をコメントアウトしてください。
+  //M5_LOGI("level:%" PRId64 "\n", level) ;         // lipsync_maxを調整するときはこの行をコメントアウトしてください。
+  //M5_LOGI("temp_level:%d\n", temp_level) ;         // lipsync_maxを調整するときはこの行をコメントアウトしてください。
   float ratio = (float)(temp_level / lipsync_max);
-  M5_LOGI("ratio:%f\n", ratio);
+  //M5_LOGI("ratio:%f\n", ratio);
   if (ratio <= 0.01f) {
     ratio = 0.0f;
     if ((millis() - last_lipsync_max_msec) > 500) {
@@ -134,8 +134,16 @@ void setup()
       position_left = -35;
       display_rotation = 3;
       break;
-    
-    case m5::board_t::board_M5StackCore2:
+
+    case m5::board_t::board_M5StickCPlus2:
+      first_cps = 2;
+      scale = 0.85f;
+      position_top = -55;
+      position_left = -35;
+      display_rotation = 3;
+      break;
+   
+     case m5::board_t::board_M5StackCore2:
       scale = 1.0f;
       position_top = 0;
       position_left = 0;
@@ -226,7 +234,9 @@ void loop()
   if (M5.BtnA.wasDoubleClicked()) {
     M5.Display.setRotation(3);
   }
-  
+  if (M5.BtnPWR.wasClicked()) {
+    esp_restart();
+  } 
 //  if ((millis() - last_rotation_msec) > 100) {
     //float angle = 10 * sin(count);
     //avatar.setRotation(angle);
