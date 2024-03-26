@@ -10,6 +10,7 @@
   goblib::UnifiedButton unifiedButton;
 #endif
 #define USE_MIC
+#define USE_LED
 
 #ifdef USE_MIC
   // ---------- Mic sampling ----------
@@ -28,6 +29,37 @@
   uint8_t lipsync_shift_level = 11; // リップシンクのデータをどのくらい小さくするか設定。口の開き方が変わります。
   float lipsync_max =LIPSYNC_LEVEL_MAX;  // リップシンクの単位ここを増減すると口の開き方が変わります。
 
+  #ifdef USE_LED
+    #include <FastLED.h>
+    #define NUM_LEDS 1
+    #define LED_PIN 6 
+    CRGB leds[NUM_LEDS];
+    CHSV red (0, 255, 255);
+    CHSV green (95, 255, 255);
+    CHSV blue (160, 255, 255);
+    CHSV magenta (210, 255, 255);
+    CHSV yellow (45, 255, 255);
+    CHSV hsv_table[5] = { blue, green, yellow, magenta, red };
+    void turn_off_led() {
+      // Now turn the LED off, then pause
+      for(int i=0;i<NUM_LEDS;i++) leds[i] = CRGB::Black;
+      FastLED.show();  
+    }
+
+    void clear_led_buff() {
+      // Now turn the LED off, then pause
+      for(int i=0;i<NUM_LEDS;i++) leds[i] =  CRGB::Black;
+    }
+
+    void level_led(int level1, int level2) {  
+      if(level1 > 5) level1 = 5;
+      
+      clear_led_buff(); 
+      leds[0] = hsv_table[level1];
+      FastLED.show();
+    }
+
+  #endif
 #endif
 
 
@@ -85,6 +117,16 @@ void lipsync() {
 #else
   float ratio = 0.0f;
 #endif
+
+#ifdef USE_LED
+  if (ratio == 0.0f) {
+    level_led(0, 0);
+    
+  } else {
+    level_led((int)(ratio * 6), 0);
+  }
+#endif
+
   avatar.setMouthOpenRatio(ratio);
   
 }
@@ -217,6 +259,14 @@ void setup()
   //avatar.addTask(lipsync, "lipsync");
   last_rotation_msec = lgfx::v1::millis();
   M5_LOGI("setup end");
+#ifdef USE_LED
+  FastLED.addLeds<SK6812, LED_PIN, GRB>(leds, NUM_LEDS);  // GRB ordering is typical
+  FastLED.setBrightness(32);
+  level_led(5, 0);
+  delay(1000);
+  turn_off_led();
+#endif
+
 }
 
 uint32_t count = 0;
