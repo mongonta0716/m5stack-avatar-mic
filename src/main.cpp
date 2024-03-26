@@ -22,7 +22,7 @@
   static fft_t fft;
   static constexpr size_t WAVE_SIZE = 256 * 2;
 
-  static constexpr const size_t record_samplerate = 48000; // M5StickCPlus2だと48KHzじゃないと動かない。
+  static constexpr const size_t record_samplerate = 16000; // M5StickCPlus2だと48KHzじゃないと動かなかったが、M5Unified0.1.12で修正されたのとM5AtomS2+PDFUnitで不具合が出たので戻した。。
   static int16_t *rec_data;
   
   // setupの最初の方の機種判別で書き換えている場合があります。そちらもチェックしてください。（マイクの性能が異なるため）
@@ -159,6 +159,9 @@ void setup()
       position_left = -95;
       display_rotation = 2;
       // M5AtomS3は外部マイク(PDMUnit)なので設定を行う。
+      mic_cfg.sample_rate = 16000;
+      //mic_cfg.dma_buf_len = 256;
+      //mic_cfg.dma_buf_count = 3;
       mic_cfg.pin_ws = 1;
       mic_cfg.pin_data_in = 2;
       M5.Mic.config(mic_cfg);
