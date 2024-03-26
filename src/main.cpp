@@ -46,6 +46,7 @@ void lipsync() {
   
   size_t bytesread;
   uint64_t level = 0;
+#ifndef SDL_h_
   if ( M5.Mic.record(rec_data, WAVE_SIZE, record_samplerate)) {
     fft.exec(rec_data);
     for (size_t bx=5;bx<=60;++bx) {
@@ -60,9 +61,9 @@ void lipsync() {
   //M5_LOGI("ratio:%f\n", ratio);
   if (ratio <= 0.01f) {
     ratio = 0.0f;
-    if ((millis() - last_lipsync_max_msec) > 500) {
+    if ((lgfx::v1::millis() - last_lipsync_max_msec) > 500) {
       // 0.5秒以上無音の場合リップシンク上限をリセット
-      last_lipsync_max_msec = millis();
+      last_lipsync_max_msec = lgfx::v1::millis();
       lipsync_max = LIPSYNC_LEVEL_MAX;
     }
   } else {
@@ -73,15 +74,19 @@ void lipsync() {
       }
       ratio = 1.3f;
     }
-    last_lipsync_max_msec = millis(); // 無音でない場合は更新
+    last_lipsync_max_msec = lgfx::v1::millis(); // 無音でない場合は更新
   }
 
-  if ((millis() - last_rotation_msec) > 350) {
+  if ((lgfx::v1::millis() - last_rotation_msec) > 350) {
     int direction = random(-2, 2);
     avatar.setRotation(direction * 10 * ratio);
-    last_rotation_msec = millis();
+    last_rotation_msec = lgfx::v1::millis();
   }
+#else
+  float ratio = 0.0f;
+#endif
   avatar.setMouthOpenRatio(ratio);
+  
 }
 
 
@@ -89,7 +94,6 @@ void setup()
 {
   auto cfg = M5.config();
   cfg.internal_mic = true;
-  cfg.serial_baudrate = 115200;
   M5.begin(cfg);
 #if defined( ARDUINO_M5STACK_CORES3 )
   unifiedButton.begin(&M5.Display, goblib::UnifiedButton::appearance_t::transparent_all);
@@ -99,7 +103,6 @@ void setup()
   M5.Log.setEnableColor(m5::log_target_serial, false);
   M5_LOGI("Avatar Start");
   M5.Log.printf("M5.Log avatar Start\n");
-  Serial.println("avatar start");
   float scale = 0.0f;
   int8_t position_top = 0;
   int8_t position_left = 0;
@@ -112,7 +115,7 @@ void setup()
       scale = 0.55f;
       position_top =  -60;
       position_left = -95;
-      display_rotation = 3;
+      display_rotation = 2;
       // M5AtomS3は外部マイク(PDMUnit)なので設定を行う。
       mic_cfg.pin_ws = 1;
       mic_cfg.pin_data_in = 2;
@@ -169,7 +172,7 @@ void setup()
       scale = 0.8f;
       position_top =  0;
       position_left = -40;
-      display_rotation = 1;
+      display_rotation = 2;
       // M5ADial(StampS3)は外部マイク(PDMUnit)なので設定を行う。(Port.A)
       mic_cfg.pin_ws = 15;
       mic_cfg.pin_data_in = 13;
@@ -178,13 +181,15 @@ void setup()
 
       
     defalut:
-      Serial.println("Invalid board.");
+      M5.Log.println("Invalid board.");
       break;
   }
+#ifndef SDL_h_
   rec_data = (typeof(rec_data))heap_caps_malloc(WAVE_SIZE * sizeof(int16_t), MALLOC_CAP_8BIT);
   memset(rec_data, 0 , WAVE_SIZE * sizeof(int16_t));
-  M5.Speaker.end();
   M5.Mic.begin();
+#endif
+  M5.Speaker.end();
 
   M5.Display.setRotation(display_rotation);
   avatar.setScale(scale);
@@ -210,7 +215,7 @@ void setup()
   cps[5]->set(COLOR_BACKGROUND, (uint16_t)0x00ff00);
   avatar.setColorPalette(*cps[first_cps]);
   //avatar.addTask(lipsync, "lipsync");
-  last_rotation_msec = millis();
+  last_rotation_msec = lgfx::v1::millis();
   M5_LOGI("setup end");
 }
 
@@ -235,7 +240,9 @@ void loop()
     M5.Display.setRotation(3);
   }
   if (M5.BtnPWR.wasClicked()) {
+#ifdef ARDUINO
     esp_restart();
+#endif
   } 
 //  if ((millis() - last_rotation_msec) > 100) {
     //float angle = 10 * sin(count);
@@ -247,5 +254,5 @@ void loop()
   // avatar's face updates in another thread
   // so no need to loop-by-loop rendering
   lipsync();
-  vTaskDelay(1/portTICK_PERIOD_MS);
+  lgfx::v1::delay(1);
 }
