@@ -10,7 +10,7 @@
   goblib::UnifiedButton unifiedButton;
 #endif
 #define USE_MIC
-#define USE_LED
+//#define USE_LED
 
 #ifdef USE_MIC
   // ---------- Mic sampling ----------
@@ -190,7 +190,15 @@ void setup()
       position_left = -35;
       display_rotation = 3;
       break;
-   
+
+     case m5::board_t::board_M5Cardputer:
+      first_cps = 1;
+      scale = 0.85f;
+      position_top = -55;
+      position_left = -35;
+      display_rotation = 1;
+      break;
+  
      case m5::board_t::board_M5StackCore2:
       scale = 1.0f;
       position_top = 0;
