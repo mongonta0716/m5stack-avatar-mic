@@ -151,6 +151,7 @@ void setup()
       break;
 
     case m5::board_t::board_M5StackCoreS3:
+    case m5::board_t::board_M5StackCoreS3SE:
       scale = 1.0f;
       position_top = 0;
       position_left = 0;
