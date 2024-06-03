@@ -1,4 +1,4 @@
-#include <Arduino.h>
+//#include <Arduino.h>
 // This source is extracted from the following repository source.(examples/Advanced/Bluetooth_with_ESP32A2DP)
 // https://github.com/m5stack/M5Unified
 
