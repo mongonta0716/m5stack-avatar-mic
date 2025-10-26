@@ -93,8 +93,9 @@ void lipsync() {
 void setup()
 {
   auto cfg = M5.config();
-  cfg.internal_mic = true;
+  cfg.internal_mic = false;
   M5.begin(cfg);
+//  Serial.begin(115200);
 #if defined( ARDUINO_M5STACK_CORES3 )
   unifiedButton.begin(&M5.Display, goblib::UnifiedButton::appearance_t::transparent_all);
 #endif
@@ -109,13 +110,15 @@ void setup()
   uint8_t display_rotation = 1; // ディスプレイの向き(0〜3)
   uint8_t first_cps = 0;
   auto mic_cfg = M5.Mic.config();
+  M5_LOGI("Board Check");
   switch (M5.getBoard()) {
     case m5::board_t::board_M5AtomS3:
-      first_cps = 4;
+    case m5::board_t::board_M5AtomS3R:
+      first_cps = 3;
       scale = 0.55f;
       position_top =  -60;
       position_left = -95;
-      display_rotation = 2;
+      display_rotation = 0;
       // M5AtomS3は外部マイク(PDMUnit)なので設定を行う。
       mic_cfg.sample_rate = 16000;
       //mic_cfg.dma_buf_len = 256;
@@ -188,6 +191,7 @@ void setup()
       M5.Log.println("Invalid board.");
       break;
   }
+  M5_LOGI("Board Check End");
 #ifndef SDL_h_
   rec_data = (typeof(rec_data))heap_caps_malloc(WAVE_SIZE * sizeof(int16_t), MALLOC_CAP_8BIT);
   memset(rec_data, 0 , WAVE_SIZE * sizeof(int16_t));
@@ -195,6 +199,7 @@ void setup()
 #endif
   M5.Speaker.end();
 
+  M5_LOGI("avatar setup");
   M5.Display.setRotation(display_rotation);
   avatar.setScale(scale);
   avatar.setPosition(position_top, position_left);
