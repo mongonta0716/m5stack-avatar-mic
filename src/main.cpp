@@ -94,6 +94,7 @@ void setup()
 {
   auto cfg = M5.config();
   cfg.internal_mic = false;
+  cfg.external_speaker.atomic_echo = true;
   M5.begin(cfg);
 //  Serial.begin(115200);
 #if defined( ARDUINO_M5STACK_CORES3 )
@@ -120,12 +121,12 @@ void setup()
       position_left = -95;
       display_rotation = 0;
       // M5AtomS3は外部マイク(PDMUnit)なので設定を行う。
-      mic_cfg.sample_rate = 16000;
+      //mic_cfg.sample_rate = 16000;
       //mic_cfg.dma_buf_len = 256;
       //mic_cfg.dma_buf_count = 3;
-      mic_cfg.pin_ws = 1;
-      mic_cfg.pin_data_in = 2;
-      M5.Mic.config(mic_cfg);
+      //mic_cfg.pin_ws = 1;
+      //mic_cfg.pin_data_in = 2;
+      //M5.Mic.config(mic_cfg);
       break;
 
     case m5::board_t::board_M5StickC:
@@ -187,15 +188,21 @@ void setup()
       break;
 
       
-    defalut:
+    default:
       M5.Log.println("Invalid board.");
       break;
   }
   M5_LOGI("Board Check End");
 #ifndef SDL_h_
   rec_data = (typeof(rec_data))heap_caps_malloc(WAVE_SIZE * sizeof(int16_t), MALLOC_CAP_8BIT);
+  if (rec_data == NULL) {
+    M5_LOGE("Failed to allocate rec_data");
+  } else {
+    M5_LOGI("rec_data allocated successfully");
+  }
   memset(rec_data, 0 , WAVE_SIZE * sizeof(int16_t));
-  M5.Mic.begin();
+  bool mic_result = M5.Mic.begin();
+  M5_LOGI("M5.Mic.begin() result: %d, isEnabled: %d", mic_result, M5.Mic.isEnabled());
 #endif
   M5.Speaker.end();
 
